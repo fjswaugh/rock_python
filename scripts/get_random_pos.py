@@ -1,7 +1,7 @@
 import rock
 import random
 
-def get_random_pos(position=rock.starting_position, num_iterations=20):
+def get_random_pos(position=rock.starting_position(), num_iterations=20):
     for i in range(0, num_iterations):
         moves = rock.list_moves(position)
         if len(moves) == 0:

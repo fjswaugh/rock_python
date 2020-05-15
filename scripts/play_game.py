@@ -18,7 +18,7 @@ def pick_ai_move_and_evaluate(position):
     return analysis
 
 def play_interactive_game():
-    position = rock.starting_position
+    position = rock.starting_position()
     score = 0
     i = 0
     outcome = rock.Ongoing

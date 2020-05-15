@@ -37,6 +37,19 @@ auto py_format_board(rock::Board const& x, std::string const& format_string) -> 
     return fmt::format(full_format_string, x);
 }
 
+auto py_board_at_1(rock::Board const& b, rock::BoardCoordinates c) -> std::optional<rock::Player>
+{
+    for (auto p : {rock::Player::White, rock::Player::Black})
+        if (b[p].at(c))
+            return p;
+    return std::nullopt;
+}
+
+auto py_board_at_2(rock::Board const& b, rock::BoardCoordinates c, rock::Player p) -> bool
+{
+    return b[p].at(c);
+}
+
 }  // namespace
 
 PYBIND11_MODULE(rock, m)
@@ -77,6 +90,8 @@ PYBIND11_MODULE(rock, m)
         .def(pybind11::init([](rock::BoardCoordinates from, rock::BoardCoordinates to) {
             return rock::Move{from, to};
         }))
+        .def_readonly("from_coord", &rock::Move::from)
+        .def_readonly("to_coord", &rock::Move::to)
         .def("is_legal", &rock::is_move_legal, "position"_a)
         .def_static("parse", [](std::string const& str) { return rock::parse_move(str); })
         .def("__str__", [](rock::Move x) { return to_string(x); })
@@ -84,6 +99,8 @@ PYBIND11_MODULE(rock, m)
 
     pybind11::class_<rock::Board>(m, "Board")
         .def(pybind11::init<>())
+        .def("at", &py_board_at_1, "coordinates"_a)
+        .def("at", &py_board_at_2, "coordinates"_a, "player"_a)
         .def("apply_move", &py_apply_move_board, "move"_a)
         .def("__format__", &py_format_board)
         .def("__str__", [](rock::Board const& x) { return to_string(x); });
@@ -95,6 +112,7 @@ PYBIND11_MODULE(rock, m)
             "player_to_move", &rock::Position::player_to_move, &rock::Position::set_player_to_move)
         .def("apply_move", &py_apply_move_position, "move"_a)
         .def("game_outcome", &rock::get_game_outcome)
+        .def("list_moves", &rock::list_moves)
         .def("__format__", &py_format_position)
         .def("__str__", [](rock::Position const& x) { return to_string(x); });
 
@@ -113,7 +131,7 @@ PYBIND11_MODULE(rock, m)
 
     // Functions
 
-    m.attr("starting_position") = rock::starting_position;
+    m.def("starting_position", [] { return rock::starting_position; });
 
     m.def("list_moves", &rock::list_moves, "position"_a);
 
