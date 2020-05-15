@@ -1,3 +1,3 @@
 [submodule "extern/rock"]
 	path = extern/rock
-	url = git@github.com:fjswaugh/rock.git
+	url = https://github.com/fjswaugh/rock.git
