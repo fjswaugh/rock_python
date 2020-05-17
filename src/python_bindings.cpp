@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <rock/algorithms.h>
+#include <rock/fen.h>
 #include <rock/format.h>
 #include <rock/parse.h>
 #include <rock/starting_position.h>
@@ -99,6 +100,9 @@ PYBIND11_MODULE(rock, m)
 
     pybind11::class_<rock::Board>(m, "Board")
         .def(pybind11::init<>())
+        .def_static(
+            "parse_fen", [](std::string const& str) { return rock::parse_fen_to_board(str); })
+        .def("to_fen", [](rock::Board const& b) { return rock::format_as_fen(b); })
         .def("at", &py_board_at_1, "coordinates"_a)
         .def("at", &py_board_at_2, "coordinates"_a, "player"_a)
         .def("apply_move", &py_apply_move_board, "move"_a)
@@ -107,6 +111,9 @@ PYBIND11_MODULE(rock, m)
 
     pybind11::class_<rock::Position>(m, "Position")
         .def(pybind11::init<>())
+        .def_static(
+            "parse_fen", [](std::string const& str) { return rock::parse_fen_to_position(str); })
+        .def("to_fen", [](rock::Position const& p) { return rock::format_as_fen(p); })
         .def_property("board", &rock::Position::board, &rock::Position::set_board)
         .def_property(
             "player_to_move", &rock::Position::player_to_move, &rock::Position::set_player_to_move)

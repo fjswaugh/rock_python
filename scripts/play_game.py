@@ -11,12 +11,6 @@ def ask_user_for_move(position):
             move = None
     return move
 
-def pick_ai_move_and_evaluate(position):
-    print("Deciding on a move...")
-    analysis = rock.analyze_position(position)
-    print("{}".format(analysis.best_move))
-    return analysis
-
 def play_interactive_game():
     position = rock.starting_position()
     score = 0
@@ -35,7 +29,8 @@ def play_interactive_game():
         if outcome != rock.GameOutcome.Ongoing:
             return outcome, position
 
-        analysis = pick_ai_move_and_evaluate(position)
+        analysis = rock.analyze_position(position)
+        print("AI move: {}".format(analysis.best_move))
         position.apply_move(analysis.best_move)
 
         outcome = position.game_outcome()
@@ -43,6 +38,29 @@ def play_interactive_game():
             return outcome, position
 
         i += 1
+
+def play_ai_vs_ai(depth_white, depth_black):
+    p = rock.starting_position()
+    i = 0
+
+    while True:
+        print("After {} turns".format(i))
+        print(p)
+
+        if p.player_to_move == rock.Player.White:
+            depth = depth_white 
+        else:
+            depth = depth_black
+        analysis = rock.analyze_position(p, depth)
+        p.apply_move(analysis.best_move)
+        i += 1
+
+        print("Analysis: {}".format(analysis))
+
+        outcome = p.game_outcome()
+        print(outcome)
+        if outcome != rock.GameOutcome.Ongoing:
+            return outcome, p
 
 if __name__ == "__main__":
     outcome, final_position = play_interactive_game()
